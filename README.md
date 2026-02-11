@@ -33,77 +33,111 @@ npm install
 
 
 2. Create your .env file
-RPC_URL3=https://rpc.sepolia-api.lisk.com
-PRIVATE_KEY=your_private_key_without_0x
+# Owner Contract — Hardhat deployment guide
 
+This repository demonstrates compiling and deploying the `Owner.sol` contract using Hardhat and Hardhat Ignition. It includes an Ignition deployment module and example artifacts.
 
-3. Compile
+Summary
+- Contracts: `contracts/Owner.sol`
+- Ignition module: `ignition/modules/Owner.ts`
+- Networks configured in `hardhat.config.ts`: `sepolia`, `arcTestnet`, `liskSepolia`
+
+Prerequisites
+- Node.js v16+ and npm
+- A funded testnet account (for test deployments)
+
+1) Prepare your environment
+
+- Create a `.env` file at the project root (do NOT commit it). Example template:
+
+```
+# Sepolia RPC
+RPC_URL1="https://your-sepolia-rpc.example"
+
+# Arc Testnet RPC
+RPC_URL2="https://your-arc-rpc.example"
+
+# Lisk Sepolia RPC
+RPC_URL3="https://rpc.sepolia-api.lisk.com"
+
+# Your wallet private key WITHOUT the 0x prefix
+PRIVATE_KEY="your_private_key_without_0x"
+
+# Etherscan or explorer API key (used for contract verification)
+ETHERSCAN_API_KEY="your_api_key_here"
+```
+
+- The repo already expects these variables in `hardhat.config.ts`.
+
+2) Install and build
+
+```bash
+npm install
 npx hardhat compile
+```
 
+3) Run tests
 
+```bash
+npx hardhat test
+```
 
-⚙️ Hardhat Configuration
-Your hardhat.config.ts includes the Lisk Sepolia network:
-require("dotenv").config();
-import { HardhatUserConfig } from "hardhat/config";
+4) Local node (optional)
 
-const { RPC_URL3, PRIVATE_KEY } = process.env;
+```bash
+npx hardhat node
+```
 
-const config: HardhatUserConfig = {
-  solidity: "0.8.28",
-  networks: {
-    liskSepolia: {
-      url: RPC_URL3,
-      accounts: [`0x${PRIVATE_KEY}`],
-      chainId: 4202,
-    },
-  },
-};
+5) Deployment (Ignition)
 
-export default config;
+- Deploy the `Owner` module to Lisk Sepolia (example):
 
-
-
-📦 Deployment Flow
-sequenceDiagram
-    participant Dev as Developer
-    participant HH as Hardhat
-    participant Ign as Ignition
-    participant RPC as Lisk Sepolia RPC
-    participant Exp as Blockscout Explorer
-
-    Dev->>HH: npx hardhat ignition deploy Owner.ts
-    HH->>Ign: Load deployment module
-    Ign->>RPC: Broadcast transaction
-    RPC->>Ign: Return contract address
-    Ign->>Dev: Deployment successful
-    Dev->>Exp: View contract on explorer
-
-
-
-🚀 Deploy to Lisk Sepolia
+```bash
 npx hardhat ignition deploy ./ignition/modules/Owner.ts --network liskSepolia
+```
 
-
-You will see output like:
-[ OwnerModule ] successfully deployed 🚀
-OwnerModule#Owner - 0x8aeE93227D............
+- Deploy to Sepolia or Arc Testnet by changing `--network`:
 
+```bash
+npx hardhat ignition deploy ./ignition/modules/Owner.ts --network sepolia
+npx hardhat ignition deploy ./ignition/modules/Owner.ts --network arcTestnet
+```
 
+6) Deploy via script (alternative)
 
-🔍 View on Blockscout
-Lisk Sepolia Explorer:
-https://sepolia-blockscout.lisk.com
-Search for your contract address:
-https://sepolia-blockscout.lisk.com/address/<your-contract-address>
+```bash
+npx hardhat run --network liskSepolia scripts/deploy.ts
+```
 
+7) Verify contracts
 
+- If the target explorer supports verification and you have an API key set in `ETHERSCAN_API_KEY`:
 
-📝 Notes
-- Hardhat Ignition does not support automatic verification on Lisk Sepolia.
-Use Blockscout’s Verify & Publish.
-- Deployment history is stored under ignition/deployments/ (ignored in Git).
-- This project is intentionally minimal and easy to extend.
+```bash
+npx hardhat verify --network sepolia <DEPLOYED_CONTRACT_ADDRESS>
+```
 
-📄 License
-MIT License.
+Notes & safety
+- Never commit private keys. Add `.env` to `.gitignore`.
+- Use small test funds on testnets before moving to mainnet.
+- Ignition deployment history and journals are in `ignition/deployments/`.
+
+Helpful commands
+- Compile: `npx hardhat compile`
+- Test: `npx hardhat test`
+- Typechain: `npx hardhat typechain`
+- Start node: `npx hardhat node`
+
+Files referenced
+- Hardhat config: [hardhat.config.ts](hardhat.config.ts)
+- Example env: [.env](.env)
+- Deployment module: [ignition/modules/Owner.ts](ignition/modules/Owner.ts)
+
+If you want, I can also:
+- add a `.env.example` file, or
+- run the test suite now, or
+- commit this README update for you.
+
+---
+
+MIT
