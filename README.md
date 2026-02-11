@@ -133,11 +133,6 @@ Files referenced
 - Example env: [.env](.env)
 - Deployment module: [ignition/modules/Owner.ts](ignition/modules/Owner.ts)
 
-If you want, I can also:
-- add a `.env.example` file, or
-- run the test suite now, or
-- commit this README update for you.
-
 ---
 
 MIT
